@@ -6,4 +6,10 @@
     <item
         android:id="@+id/action_mirror_vertical"
         android:title="@string/mirror_vertical" />
+    <item
+        android:id="@+id/action_rotate_clockwise"
+        android:title="@string/rotate_clockwise" />
+    <item
+        android:id="@+id/action_rotate_counterclockwise"
+        android:title="@string/rotate_counterclockwise" />
 </menu>

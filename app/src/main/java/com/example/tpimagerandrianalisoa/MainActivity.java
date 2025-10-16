@@ -25,6 +25,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> imagePickerLauncher;
+    private Bitmap loadedBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
         imagePickerLauncher.launch("image/*");
     }
 
+    // Méthode déclenchée par le bouton "Reverse"
+    public void onReverse(View view) {
+        ImageView imageView = findViewById(R.id.imageView3);
+        imageView.setImageBitmap(loadedBitmap);
+    }
+
     // Charge un bitmap mutable depuis une URI et l'affiche
     private void ChargerImage(Uri imageUri) {
         try {
@@ -76,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             );
 
             if (bm != null) {
+                loadedBitmap = bm;
                 ImageView imageView = findViewById(R.id.imageView3);
                 imageView.setImageBitmap(bm);
             }
@@ -113,6 +121,28 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
 
             bitmap = mirrorVertical(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        }
+
+        else if(id==R.id.action_rotate_clockwise) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = rotateClockwise(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        }
+
+        else if(id==R.id.action_rotate_counterclockwise) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = rotateCounterClockwise(bitmap);
             image.setImageBitmap(bitmap);
 
             return true;
@@ -256,4 +286,37 @@ public class MainActivity extends AppCompatActivity {
         return toGrayscale;
     }
 
+
+    // =========================================================
+    // Effectuer une rotation à 90 degrés de l’image dans le sens horaire
+    // =========================================================
+    private Bitmap rotateClockwise(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap rotated = Bitmap.createBitmap(height, width, Objects.requireNonNull(src.getConfig()));
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // Place chaque pixel à sa nouvelle position
+                rotated.setPixel(height - 1 - y, x, src.getPixel(x, y));
+            }
+        }
+        return rotated;
+    }
+
+    // =========================================================
+    // Effectuer une rotation à 90 degrés de l’image dans le sens anti-horaire
+    // =========================================================
+    private Bitmap rotateCounterClockwise(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap rotated = Bitmap.createBitmap(height, width, Objects.requireNonNull(src.getConfig()));
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                rotated.setPixel(y, width - 1 - x, src.getPixel(x, y));
+            }
+        }
+        return rotated;
+    }
 }

@@ -7,4 +7,6 @@
     <string name="mirror_vertical">Miroir Vertical</string>
     <string name="invert_colors">Inverser les couleurs</string>
     <string name="grayscale">Transformer en niveau de gris</string>
+    <string name="rotate_clockwise">Rotation horaire</string>
+    <string name="rotate_counterclockwise">Rotation anti-horaire</string>
 </resources>
