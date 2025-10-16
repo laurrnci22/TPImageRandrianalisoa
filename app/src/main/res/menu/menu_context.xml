@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_invert_colors"
+        android:title="@string/invert_colors" />
+    <item
+        android:id="@+id/action_grayscale"
+        android:title="@string/grayscale" />
+</menu>

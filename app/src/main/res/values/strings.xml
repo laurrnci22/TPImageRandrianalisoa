@@ -5,4 +5,6 @@
     <string name="title_tp5_1">TP5.1</string>
     <string name="mirror_horizontal">Miroir Horizontal</string>
     <string name="mirror_vertical">Miroir Vertical</string>
+    <string name="invert_colors">Inverser les couleurs</string>
+    <string name="grayscale">Transformer en niveau de gris</string>
 </resources>

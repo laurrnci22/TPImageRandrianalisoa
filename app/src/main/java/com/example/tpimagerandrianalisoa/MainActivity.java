@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,12 +49,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-    }
 
-    // Affiche l'URI de l'image dans un TextView
-    private void afficherUri(Uri uri) {
-        TextView uriTextView = findViewById(R.id.uriView);
-        uriTextView.setText(uri.toString());
+        ImageView imageView = findViewById(R.id.imageView3);
+
+        // Enregistrement du menu contextuel pour le clic long
+        registerForContextMenu(imageView);
     }
 
     // Méthode déclenchée par le bouton "Upload Image"
@@ -85,11 +85,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    ///  Menu d'options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_options, menu);
         return true;
     }
 
@@ -118,6 +119,41 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    /// Menu contextuel
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id==R.id.action_invert_colors) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = invertColors(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        }
+        else if(id==R.id.action_grayscale) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = grayscale(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        } else {
+            return super.onContextItemSelected(item);
+        }
     }
 
     // =========================================================
@@ -158,6 +194,66 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return mirrored;
+    }
+
+    // =========================================================
+    // Inverser les couleurs pixel par pixel
+    // =========================================================
+    private Bitmap invertColors(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap inverted = src.copy(Objects.requireNonNull(src.getConfig()), true);
+
+        // Parcours de chaque pixel
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int pixel = src.getPixel(x, y);
+
+                // Extraction des composantes ARGB
+                int alpha = (pixel >> 24) & 0xff;
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = pixel & 0xff;
+
+                // Inversion des couleurs
+                int invertedColor = (alpha << 24) | ((255 - red) << 16) | ((255 - green) << 8) | (255 - blue);
+
+                inverted.setPixel(x, y, invertedColor);
+            }
+        }
+
+        return inverted;
+    }
+
+
+    // =========================================================
+    // Convertir en un niveau de gris
+    // =========================================================
+    private Bitmap grayscale(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap toGrayscale = src.copy(Objects.requireNonNull(src.getConfig()), true);
+
+        // Parcours de chaque pixel
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int pixel = src.getPixel(x, y);
+
+                // Extraction des composantes ARGB
+                int alpha = (pixel >> 24) & 0xff;
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = pixel & 0xff;
+
+                int m = (red + green + blue) / 3;
+
+                int grayPixel = (alpha << 24) | (m << 16) | (m << 8) | m;
+
+                toGrayscale.setPixel(x, y, grayPixel);
+            }
+        }
+
+        return toGrayscale;
     }
 
 }
