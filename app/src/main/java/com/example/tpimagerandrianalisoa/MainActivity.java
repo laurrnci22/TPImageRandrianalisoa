@@ -2,8 +2,12 @@ package com.example.tpimagerandrianalisoa;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> imagePickerLauncher;
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Lanceur pour la sélection d'image depuis la galerie
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 uri -> {
@@ -43,13 +50,18 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    // ====================================================================================
-    // Méthode appelée lorsque l'utilisateur clique sur le bouton de chargement d'une image
-    // ====================================================================================
+    // Affiche l'URI de l'image dans un TextView
+    private void afficherUri(Uri uri) {
+        TextView uriTextView = findViewById(R.id.uriView);
+        uriTextView.setText(uri.toString());
+    }
+
+    // Méthode déclenchée par le bouton "Upload Image"
     public void onUploadImage(View view) {
         imagePickerLauncher.launch("image/*");
     }
 
+    // Charge un bitmap mutable depuis une URI et l'affiche
     private void ChargerImage(Uri imageUri) {
         try {
             // Préparer les options de chargement
@@ -64,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             );
 
             if (bm != null) {
-                ImageView imageView = findViewById(R.id.imageView3); // adapte l’ID si besoin
+                ImageView imageView = findViewById(R.id.imageView3);
                 imageView.setImageBitmap(bm);
             }
 
@@ -72,4 +84,80 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id==R.id.action_mirror_horizontal) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = mirrorHorizontal(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        }
+        else if(id==R.id.action_mirror_vertical) {
+
+            ImageView image = findViewById(R.id.imageView3);
+            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+
+            bitmap = mirrorVertical(bitmap);
+            image.setImageBitmap(bitmap);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // =========================================================
+    // Miroir horizontal : échange les pixels gauche/droite
+    // =========================================================
+    private Bitmap mirrorHorizontal(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap mirrored = src.copy(Objects.requireNonNull(src.getConfig()), true);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width / 2; x++) {
+                int leftPixel = src.getPixel(x, y);
+                int rightPixel = src.getPixel(width - 1 - x, y);
+
+                mirrored.setPixel(x, y, rightPixel);
+                mirrored.setPixel(width - 1 - x, y, leftPixel);
+            }
+        }
+        return mirrored;
+    }
+
+    // =========================================================
+    // Miroir vertical : échange les pixels haut/bas
+    // =========================================================
+    private Bitmap mirrorVertical(Bitmap src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap mirrored = src.copy(Objects.requireNonNull(src.getConfig()), true);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height / 2; y++) {
+                int topPixel = src.getPixel(x, y);
+                int bottomPixel = src.getPixel(x, height - 1 - y);
+
+                mirrored.setPixel(x, y, bottomPixel);
+                mirrored.setPixel(x, height - 1 - y, topPixel);
+            }
+        }
+        return mirrored;
+    }
+
 }
