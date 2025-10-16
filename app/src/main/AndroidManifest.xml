@@ -13,6 +13,7 @@
         android:theme="@style/Theme.TPimageRandrianalisoa">
         <activity
             android:name=".MainActivity"
+            android:label="@string/title_tp5"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

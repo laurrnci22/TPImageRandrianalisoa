@@ -2,11 +2,15 @@
     <string name="app_name">TPimageRandrianalisoa</string>
 
     <!-- Titles -->
-    <string name="title_tp5_1">TP5.1</string>
+    <string name="title_tp5">TP5</string>
+
+    <!-- Menu options -->
     <string name="mirror_horizontal">Miroir Horizontal</string>
     <string name="mirror_vertical">Miroir Vertical</string>
-    <string name="invert_colors">Inverser les couleurs</string>
-    <string name="grayscale">Transformer en niveau de gris</string>
     <string name="rotate_clockwise">Rotation horaire</string>
     <string name="rotate_counterclockwise">Rotation anti-horaire</string>
+
+    <!-- Menu contextuel -->
+    <string name="invert_colors">Inverser les couleurs</string>
+    <string name="grayscale">Transformer en niveau de gris</string>
 </resources>

@@ -7,6 +7,34 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="137dp"
+        android:layout_height="47dp"
+        android:background="#151566"
+        android:onClick="onReverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.821"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.865"
+        app:srcCompat="@android:drawable/ic_menu_revert" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="137dp"
+        android:layout_height="47dp"
+        android:background="#292975"
+        android:onClick="onUpload"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.218"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.864"
+        app:srcCompat="@android:drawable/ic_menu_upload" />
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="313dp"
@@ -23,7 +51,6 @@
         android:id="@+id/uriView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TODO URI"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -32,29 +59,17 @@
         app:layout_constraintVertical_bias="0.219" />
 
     <ImageButton
-        android:id="@+id/imageButton8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onUploadImage"
+        android:id="@+id/imageButton2"
+        android:layout_width="137dp"
+        android:layout_height="47dp"
+        android:background="#5151E6"
+        android:onClick="onUpload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.247"
+        app:layout_constraintHorizontal_bias="0.218"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.857"
-        app:srcCompat="@mipmap/ic_launcher" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="89dp"
-        android:layout_height="69dp"
-        android:onClick="onReverse"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.764"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.833"
-        app:srcCompat="@android:drawable/ic_menu_revert" />
+        app:layout_constraintVertical_bias="0.864"
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

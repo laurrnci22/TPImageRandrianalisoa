@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,8 +25,9 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Bitmap INITIAL_BITMAP;
     private ActivityResultLauncher<String> imagePickerLauncher;
-    private Bitmap loadedBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                     if (uri != null) {
                         TextView uriTextView = findViewById(R.id.uriView);
                         uriTextView.setText(uri.toString());
-
                         ChargerImage(uri);
                     }
                 }
@@ -57,25 +58,29 @@ public class MainActivity extends AppCompatActivity {
         registerForContextMenu(imageView);
     }
 
-    // Méthode déclenchée par le bouton "Upload Image"
-    public void onUploadImage(View view) {
+    // Méthode déclenchée par le bouton de téléversement
+    public void onUpload(View view) {
         imagePickerLauncher.launch("image/*");
     }
 
-    // Méthode déclenchée par le bouton "Reverse"
+    // Méthode déclenchée par le bouton retour
     public void onReverse(View view) {
         ImageView imageView = findViewById(R.id.imageView3);
-        imageView.setImageBitmap(loadedBitmap);
+
+        if (imageView.getDrawable() == null) {
+            Toast.makeText(this, "Aucune image chargée", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        imageView.setImageBitmap(INITIAL_BITMAP);
     }
 
     // Charge un bitmap mutable depuis une URI et l'affiche
     private void ChargerImage(Uri imageUri) {
         try {
-            // Préparer les options de chargement
             BitmapFactory.Options option = new BitmapFactory.Options();
-            option.inMutable = true; // l’image pourra être modifiée
+            option.inMutable = true;
 
-            // Chargement du Bitmap à partir de l’URI
             Bitmap bm = BitmapFactory.decodeStream(
                     getContentResolver().openInputStream(imageUri),
                     null,
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             );
 
             if (bm != null) {
-                loadedBitmap = bm;
+                INITIAL_BITMAP = bm;
                 ImageView imageView = findViewById(R.id.imageView3);
                 imageView.setImageBitmap(bm);
             }
@@ -93,10 +98,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ///  Menu d'options
+    ///////////////////////////  MENU OPTIONS ///////////////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options, menu);
         return true;
@@ -105,53 +109,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id==R.id.action_mirror_horizontal) {
 
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = mirrorHorizontal(bitmap);
-            image.setImageBitmap(bitmap);
-
-            return true;
-        }
-        else if(id==R.id.action_mirror_vertical) {
-
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = mirrorVertical(bitmap);
-            image.setImageBitmap(bitmap);
-
+        if (id==R.id.action_mirror_horizontal) { // miroir horizontal
+            applyBitmapTransformation(this::mirrorHorizontal);
             return true;
         }
 
-        else if(id==R.id.action_rotate_clockwise) {
-
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = rotateClockwise(bitmap);
-            image.setImageBitmap(bitmap);
-
+        else if (id==R.id.action_mirror_vertical) { // miroir vertical
+            applyBitmapTransformation(this::mirrorVertical);
             return true;
         }
 
-        else if(id==R.id.action_rotate_counterclockwise) {
+        else if (id==R.id.action_rotate_clockwise) { // rotation horaire
+            applyBitmapTransformation(this::rotateClockwise);
+            return true;
+        }
 
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = rotateCounterClockwise(bitmap);
-            image.setImageBitmap(bitmap);
-
+        else if (id==R.id.action_rotate_counterclockwise) { // rotation anti-horaire
+            applyBitmapTransformation(this::rotateCounterClockwise);
             return true;
         }
 
         return false;
     }
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Menu contextuel
+    ///////////////////////////  MENU CONTEXTUEL ///////////////////////////////////////
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -162,32 +145,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id==R.id.action_invert_colors) {
 
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = invertColors(bitmap);
-            image.setImageBitmap(bitmap);
-
+        if (id==R.id.action_invert_colors) { // couleur inversée
+            applyBitmapTransformation(this::invertColors);
             return true;
         }
-        else if(id==R.id.action_grayscale) {
 
-            ImageView image = findViewById(R.id.imageView3);
-            Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-
-            bitmap = grayscale(bitmap);
-            image.setImageBitmap(bitmap);
-
+        else if (id==R.id.action_grayscale) { // niveau de gris
+            applyBitmapTransformation(this::grayscale);
             return true;
-        } else {
-            return super.onContextItemSelected(item);
         }
+
+        else return super.onContextItemSelected(item);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    // =========================================================
+    // Application transformation au bitmap actuel
+    // =========================================================
+    private void applyBitmapTransformation(BitmapTransformer transformer) {
+        ImageView image = findViewById(R.id.imageView3);
+
+        if (image.getDrawable() == null) {
+            Toast.makeText(this, "Aucune image chargée", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+
+        if (bitmap == null) {
+            Toast.makeText(this, "Impossible de récupérer l'image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bitmap newBitmap = transformer.transform(bitmap);
+        image.setImageBitmap(newBitmap);
+    }
+
+    // Interface pour les transformations
+    private interface BitmapTransformer {
+        Bitmap transform(Bitmap src);
     }
 
     // =========================================================
-    // Miroir horizontal : échange les pixels gauche/droite
+    // Miroir horizontal
     // =========================================================
     private Bitmap mirrorHorizontal(Bitmap src) {
         int width = src.getWidth();
@@ -207,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // Miroir vertical : échange les pixels haut/bas
+    // Miroir vertical
     // =========================================================
     private Bitmap mirrorVertical(Bitmap src) {
         int width = src.getWidth();
@@ -227,27 +229,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // Inverser les couleurs pixel par pixel
+    // Inverser les couleurs
     // =========================================================
     private Bitmap invertColors(Bitmap src) {
         int width = src.getWidth();
         int height = src.getHeight();
         Bitmap inverted = src.copy(Objects.requireNonNull(src.getConfig()), true);
 
-        // Parcours de chaque pixel
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int pixel = src.getPixel(x, y);
 
-                // Extraction des composantes ARGB
                 int alpha = (pixel >> 24) & 0xff;
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = pixel & 0xff;
 
-                // Inversion des couleurs
                 int invertedColor = (alpha << 24) | ((255 - red) << 16) | ((255 - green) << 8) | (255 - blue);
-
                 inverted.setPixel(x, y, invertedColor);
             }
         }
@@ -255,21 +253,18 @@ public class MainActivity extends AppCompatActivity {
         return inverted;
     }
 
-
     // =========================================================
-    // Convertir en un niveau de gris
+    // Gris
     // =========================================================
     private Bitmap grayscale(Bitmap src) {
         int width = src.getWidth();
         int height = src.getHeight();
         Bitmap toGrayscale = src.copy(Objects.requireNonNull(src.getConfig()), true);
 
-        // Parcours de chaque pixel
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int pixel = src.getPixel(x, y);
 
-                // Extraction des composantes ARGB
                 int alpha = (pixel >> 24) & 0xff;
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
@@ -278,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
                 int m = (red + green + blue) / 3;
 
                 int grayPixel = (alpha << 24) | (m << 16) | (m << 8) | m;
-
                 toGrayscale.setPixel(x, y, grayPixel);
             }
         }
@@ -286,9 +280,8 @@ public class MainActivity extends AppCompatActivity {
         return toGrayscale;
     }
 
-
     // =========================================================
-    // Effectuer une rotation à 90 degrés de l’image dans le sens horaire
+    // Rotation horaire
     // =========================================================
     private Bitmap rotateClockwise(Bitmap src) {
         int width = src.getWidth();
@@ -297,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                // Place chaque pixel à sa nouvelle position
                 rotated.setPixel(height - 1 - y, x, src.getPixel(x, y));
             }
         }
@@ -305,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // Effectuer une rotation à 90 degrés de l’image dans le sens anti-horaire
+    // Rotation anti-horaire
     // =========================================================
     private Bitmap rotateCounterClockwise(Bitmap src) {
         int width = src.getWidth();
